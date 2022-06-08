@@ -21,6 +21,7 @@ struct Arguments {
   std::string outputFileName;
   DataType dataType;
   bool isUnsigned;
+  bool compress;
 };
 
 // =========================================================================
@@ -48,6 +49,7 @@ int DoIt(const Arguments &arguments, inputT)
   // =========================================================================
   auto imageWriter = ImageWriterType::New();
   imageWriter->SetFileName(arguments.outputFileName);
+  imageWriter->SetUseCompression(arguments.compress);
   imageWriter->SetInput(imageReader->GetOutput());
   imageWriter->Write();
 
@@ -70,11 +72,13 @@ int main (int argc, char **argv)
     TCLAP::ValueArg<std::string> outputInput("o", "output", "Output Image", true, "None", "string");
     TCLAP::ValueArg<unsigned short int> datatypeInput("d", "datatypeInput", "Datatype: (0) short, (1) int or (2) float", true, 0, "unsigned short int");
     TCLAP::SwitchArg unsignedInput("u", "unsigned", "Unsigned values", false);
+    TCLAP::SwitchArg compressInput("c", "compress", "Compress output", false);
 
     cmd.add(inputInput);
     cmd.add(outputInput);
     cmd.add(datatypeInput);
     cmd.add(unsignedInput);
+    cmd.add(compressInput);
 
     cmd.parse(argc,argv);
 
@@ -82,6 +86,7 @@ int main (int argc, char **argv)
     arguments.outputFileName = outputInput.getValue();
     arguments.dataType = static_cast<Arguments::DataType>(datatypeInput.getValue());
     arguments.isUnsigned = unsignedInput.getValue();
+    arguments.compress = compressInput.getValue();
 
     if (arguments.dataType == Arguments::DataType::_float &&
         arguments.isUnsigned) {
